@@ -1,7 +1,29 @@
-FROM node:18-alpine
+# 1️⃣ Base image: Docker + Alpine
+FROM docker:24.0.6-dind
+
+# Çalışma dizini
 WORKDIR /app
-COPY . .
+
+# Git, bash ve Node.js kurulumu
+RUN apk add --no-cache \
+    git \
+    bash \
+    nodejs \
+    npm
+
+# Production için bağımlılıkları kur
+COPY package*.json ./
 RUN npm ci --only=production
+
+# Uygulama kodlarını kopyala
+COPY . .
+
+# Uygulamayı build et
 RUN npm run build
+
+# Port ayarı
 EXPOSE 3000
-CMD ["npm", "start"]
+
+# Docker daemon başlatmak için entrypoint
+# Node uygulamasını da aynı container içinde çalıştırır
+ENTRYPOINT ["sh", "-c", "dockerd-entrypoint.sh & npm start"]
