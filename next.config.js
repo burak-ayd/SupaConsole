@@ -1,30 +1,28 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ✅ Yeni format (experimental.turbo yerine turbopack)
-  turbopack: {
-    // Alias'ları false yerine null olarak veya boş string ile yönlendir
-    resolveAlias: {
-      '@supabase-core': null,
-      '@supabase-projects': null,
+  experimental: {
+    turbo: {
+      rules: {
+        '*.ts': ['babel-loader'],
+        '*.tsx': ['babel-loader'],
+      },
     },
   },
-
-  experimental: {
-    externalDir: true,
-  },
-
   typescript: {
     ignoreBuildErrors: false,
   },
-
   webpack: (config, { isServer }) => {
-    // Webpack kullanan ortamlar için exclude kuralı devam etsin
+    // Exclude supabase directories from build
     config.module.rules.push({
       test: /\.tsx?$/,
       exclude: [/supabase-core/, /supabase-projects/],
-    });
-    return config;
+    })
+    return config
   },
-};
+  // Exclude supabase-core from compilation
+  experimental: {
+    externalDir: true,
+  },
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
