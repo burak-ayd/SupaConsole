@@ -38,8 +38,6 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get update && apt-get install -y nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
-# Docker kullanımı için kullanıcı ekleme
-RUN usermod -aG docker $USER
 
 
 # Paketleri kopyala ve build
