@@ -35,14 +35,12 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Node.js ve npm kurulumu
-RUN apt-get update && apt-get install -y nodejs npm \
-    && rm -rf /var/lib/apt/lists/*
-
-
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs
 
 # Paketleri kopyala ve build
 COPY . .
-RUN npm ci --only=production
+RUN npm ci
 
 
 RUN npm run build
