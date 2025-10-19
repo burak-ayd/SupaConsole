@@ -1,4 +1,4 @@
-/** @type {import('next').NextConfig} */
+/** @type {import('next').NextCosnfig} */
 const nextConfig = {
   experimental: {
     turbo: {
