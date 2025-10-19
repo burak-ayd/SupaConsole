@@ -6,6 +6,7 @@ FROM docker:24.0.6-dind
 # Çalışma dizini
 WORKDIR /app
 
+
 # Temel paketler kurulumu
 RUN apt-get update && apt-get install -y \
     curl \
