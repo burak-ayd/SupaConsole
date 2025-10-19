@@ -1,24 +1,24 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // ✅ Turbopack ve Webpack arasında otomatik geçişi destekler
-  experimental: {
-    turbo: {
-      // Turbopack için özel build optimizasyonları (loader gerektirmez)
-      resolveAlias: {
-        '@supabase-core': false,
-        '@supabase-projects': false,
-      },
+  // ✅ Yeni format (experimental.turbo yerine turbopack)
+  turbopack: {
+    // Alias'ları false yerine null olarak veya boş string ile yönlendir
+    resolveAlias: {
+      '@supabase-core': null,
+      '@supabase-projects': null,
     },
+  },
+
+  experimental: {
     externalDir: true,
   },
 
   typescript: {
-    // Derleme hatalarını durdurmasını istemiyorsan true yap
     ignoreBuildErrors: false,
   },
 
   webpack: (config, { isServer }) => {
-    // ✅ Webpack modunda Supabase klasörlerini hariç tut
+    // Webpack kullanan ortamlar için exclude kuralı devam etsin
     config.module.rules.push({
       test: /\.tsx?$/,
       exclude: [/supabase-core/, /supabase-projects/],
