@@ -39,15 +39,14 @@ RUN apt-get update && apt-get install -y nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
 # Docker kullanımı için kullanıcı ekleme
-RUN useradd -ms /bin/bash appuser \
-    && usermod -aG docker appuser
-USER appuser
+RUN usermod -aG docker $USER
+
 
 # Paketleri kopyala ve build
-COPY package*.json ./
-RUN npm ci
-
 COPY . .
+RUN npm ci --only=production
+
+
 RUN npm run build
 
 EXPOSE 3000
