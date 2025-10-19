@@ -1,7 +1,7 @@
 # =========================
-# Base image: Ubuntu + Node.js
+# Base image: Ubuntu + DinD
 # =========================
-FROM ubuntu:22.04
+FROM docker:24.0.6-dind
 
 # Çalışma dizini
 WORKDIR /app
@@ -17,33 +17,20 @@ RUN apt-get update && apt-get install -y \
     sudo \
     && rm -rf /var/lib/apt/lists/*
 
-# Docker resmi GPG key ve repo ekleme
-RUN mkdir -p /etc/apt/keyrings \
-    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/keyrings/docker.gpg \
-    && chmod a+r /etc/apt/keyrings/docker.gpg
-
-RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-  $(lsb_release -cs) stable" | tee /etc/apt/sources.list.d/docker.list > /dev/null
-
-# Docker paketlerini yükle
-RUN apt-get update && apt-get install -y \
-    docker-ce \
-    docker-ce-cli \
-    containerd.io \
-    docker-buildx-plugin \
-    docker-compose-plugin \
+# Node.js 18 kurulumu
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs npm \
     && rm -rf /var/lib/apt/lists/*
 
-# Node.js ve npm kurulumu
-RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs
-
-# Paketleri kopyala ve build
-COPY . .
+# Uygulama kodlarını kopyala ve bağımlılıkları kur
+COPY package*.json ./
 RUN npm ci
 
-
+COPY . .
 RUN npm run build
 
+# Port ayarı
 EXPOSE 3000
-CMD ["npm", "start"]
+
+# Docker daemon + Node.js uygulamasını aynı anda başlat
+ENTRYPOINT ["sh", "-c", "dockerd-entrypoint.sh & npm start"]
